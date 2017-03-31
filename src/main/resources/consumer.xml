@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="msgListener" class="com.jackycser.rocketmq.study.service.DemoMessageListener"/> <!--Listener配置-->
+    <bean id="consumer" class="com.aliyun.openservices.ons.api.bean.ConsumerBean" init-method="start"
+          destroy-method="shutdown">
+        <property name="properties"> <!--消费者配置信息-->
+            <props>
+                <prop key="ConsumerId">CID_finance_car_manage_test</prop> <!--请替换XXX-->
+                <prop key="AccessKey">KLSqT1ckw6PEXE4T</prop>
+                <prop key="SecretKey">IjpCJCilsxWFIQSOytSJXExZTH1FqP</prop>
+                <!--将消费者线程数固定为50个
+                <prop key="ConsumeThreadNums">50</prop>
+                -->
+            </props>
+        </property>
+        <property name="subscriptionTable">
+            <map>
+                <entry value-ref="msgListener">
+                    <key>
+                        <bean class="com.aliyun.openservices.ons.api.bean.Subscription">
+                            <property name="topic" value="finance_car_manage_topic_test"/>
+                            <property name="expression"
+                                      value="*"/><!--expression即Tag，可以设置成具体的Tag，如 taga||tagb||tagc，也可设置成*。 *仅代表订阅所有Tag，不支持通配-->
+                        </bean>
+                    </key>
+                </entry>
+                <!--更多的订阅添加entry节点即可，如下所示-->
+                <entry value-ref="msgListener">
+                    <key>
+                        <bean class="com.aliyun.openservices.ons.api.bean.Subscription">
+                            <property name="topic" value="TopicTestMQ-Other"/> <!--订阅另外一个Topic -->
+                            <property name="expression" value="taga||tagb"/> <!-- 订阅多个Tag -->
+                        </bean>
+                    </key>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>
